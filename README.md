@@ -35,6 +35,7 @@ You start at the **Trading Post** with a wooden pickaxe, $40, and a ledger. Your
 **Caves** run deep: winding tunnels, big caverns, ravines, and lava lakes near the bottom of the world. Mined blocks drop as items you walk over to pick up.
 
 **Pickaxe tiers.** Wood → Stone → Iron → Diamond. Craft them with **E** or buy them (plus swords and armor) from the Merchant.
+- Wooden pickaxe: 3 planks (from 1 log). Mines coal and stone; handy if you lose your tools.
 - Stone pickaxe: 3 cobblestone + 2 planks. Mines iron.
 - Iron pickaxe: 3 raw iron + 2 coal + 2 planks. Mines gold and diamonds.
 - Diamond pickaxe: 3 diamonds + 2 planks. Fastest.

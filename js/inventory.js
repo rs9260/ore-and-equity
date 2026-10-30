@@ -3,6 +3,7 @@ import { B, I, PICKS, stackSize } from './blocks.js';
 
 export const RECIPES = [
   { out: [B.PLANKS, 4], in: [[B.LOG, 1]] },
+  { out: [I.WOOD_PICK, 1], in: [[B.PLANKS, 3]] }, // a way back in after losing your tools
   { out: [I.STONE_PICK, 1], in: [[B.COBBLE, 3], [B.PLANKS, 2]] },
   { out: [I.IRON_PICK, 1], in: [[I.RAW_IRON, 3], [I.COAL, 2], [B.PLANKS, 2]] },
   { out: [I.DIAMOND_PICK, 1], in: [[I.DIAMOND, 3], [B.PLANKS, 2]] },
