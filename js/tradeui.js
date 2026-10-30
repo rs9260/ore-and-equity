@@ -352,7 +352,7 @@ export function openLedger(game) {
       const v = e.villages[k];
       if (v.shares) rows += `<tr><td>${v.shares} × ${VILLAGE_INFO[k].ticker} @ ${money(v.price, 2)}</td><td class="r">${money(v.shares * v.price, 2)}</td></tr>`;
     }
-    if (e.debt > 0) rows += `<tr><td>Loan (Port Bank)</td><td class="r down">−${money(e.debt, 2)}</td></tr>`;
+    if (e.debt > 0) rows += `<tr><td>Loan (Port Bank)</td><td class="r down">-${money(e.debt, 2)}</td></tr>`;
     rows += `<tr><td><b>Net worth</b></td><td class="r"><b>${money(nw, 2)}</b></td></tr>`;
     left.appendChild(h(`<div><h3>Portfolio</h3><table>${rows}</table></div>`));
     // allocation bar
@@ -367,8 +367,8 @@ export function openLedger(game) {
       <tr><td>Dividends</td><td class="r">${money(s.dividends, 2)}</td></tr>
       <tr><td>Realised share gains</td><td class="r ${cls(s.shareGains)}">${money(s.shareGains, 2)}</td></tr>
       <tr><td>Murkmole bounties</td><td class="r">${money(s.bounties, 2)}</td></tr>
-      <tr><td>Interest charged</td><td class="r down">−${money(s.interestPaid, 2)}</td></tr>
-      <tr><td>Spent on pickaxes</td><td class="r">−${money(s.toolSpend, 2)}</td></tr>
+      <tr><td>Interest charged</td><td class="r down">-${money(s.interestPaid, 2)}</td></tr>
+      <tr><td>Spent on gear</td><td class="r">-${money(s.toolSpend, 2)}</td></tr>
     </table></div>`));
     const right = document.createElement('div');
     right.appendChild(h('<h3>Net worth over time</h3>'));
@@ -408,10 +408,10 @@ export function renderEnd(game, result, scores, myIndex) {
           <tr><td class="note" style="margin:0">  market sales ${money(s.oreSales)} + deliveries ${money(s.deliveries)}</td><td></td></tr>
           <tr><td>📈 Investment income</td><td style="text-align:right" class="${cls(result.investing)}"><b>${money(result.investing, 2)}</b></td></tr>
           <tr><td class="note" style="margin:0">  dividends ${money(s.dividends)} + share gains ${money(result.shareGainsTotal)}</td><td></td></tr>
-          <tr><td>🏦 Interest paid</td><td style="text-align:right" class="down"><b>−${money(s.interestPaid, 2)}</b></td></tr>
+          <tr><td>🏦 Interest paid</td><td style="text-align:right"${s.interestPaid > 0 ? ' class="down"' : ''}><b>-${money(s.interestPaid, 2)}</b></td></tr>
           <tr><td>⚔ Murkmole bounties</td><td style="text-align:right">${money(s.bounties, 2)}</td></tr>
-          <tr><td>🔨 Spent on pickaxes</td><td style="text-align:right">−${money(s.toolSpend, 2)}</td></tr>
-          ${s.seized ? `<tr><td>⚠ Seized by the bank</td><td style="text-align:right" class="down">−${money(s.seized, 2)}</td></tr>` : ''}
+          <tr><td>🔨 Spent on gear</td><td style="text-align:right">-${money(s.toolSpend, 2)}</td></tr>
+          ${s.seized ? `<tr><td>⚠ Seized by the bank</td><td style="text-align:right" class="down">-${money(s.seized, 2)}</td></tr>` : ''}
         </tbody></table>
       </div>
       <div>
