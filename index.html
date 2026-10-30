@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ore &amp; Equity</title>
+  <meta name="description" content="A first-person voxel survival game where the economy is the core: mine ore, trade commodities, invest in villages.">
+  <link rel="preload" href="fonts/Minecraftia-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="css/style.css">
+  <script type="importmap">
+    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+  </script>
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <div id="hud" class="hidden">
+    <div id="crosshair"></div>
+    <div id="attack-meter" class="meter"><div></div></div>
+    <div id="wing-meter" class="meter"><div></div></div>
+    <div id="stats" class="mc-box">
+      <div class="stat"><span class="lbl">Cash</span><span id="s-cash" class="val gold">$0</span></div>
+      <div class="stat"><span class="lbl">Net worth</span><span id="s-nw" class="val">$0</span></div>
+      <div class="stat hidden" id="s-debt-row"><span class="lbl">Debt</span><span id="s-debt" class="val red">$0</span></div>
+      <div class="stat"><span class="lbl" id="s-day">Day 1/10</span><span id="s-time" class="val">06:00</span></div>
+      <div id="daybar"><div id="daybar-fill"></div></div>
+    </div>
+    <div id="debt-banner" class="hidden"></div>
+    <div id="coords"></div>
+    <div id="chat"></div>
+    <div id="toasts"></div>
+    <div id="hint"></div>
+    <div id="tip" class="hidden"><div class="tip-title"></div><div class="tip-body"></div><div class="tip-key">press Enter or click to dismiss</div></div>
+    <div id="bottom">
+      <div id="held-name"></div>
+      <div id="hearts"></div>
+      <div id="hotbar"></div>
+      <div id="keys-help">E inventory · Q drop · Shift crouch · L ledger · F5 view · M mute · Esc pause</div>
+    </div>
+    <div id="water-overlay"></div>
+    <div id="lava-overlay"></div>
+    <div id="hurt-overlay"></div>
+    <div id="fade"></div>
+  </div>
+
+  <div id="panel" class="hidden"><div id="panel-inner" class="mc-panel"></div></div>
+
+  <div id="screen-title" class="screen">
+    <div class="title-bg"></div>
+    <div class="title-wrap">
+      <h1 class="logo">ORE <span>&amp;</span> EQUITY</h1>
+      <div class="splash">Buy low, mine deep!</div>
+      <div class="menu">
+        <button class="mc-btn" id="btn-play">Play</button>
+        <button class="mc-btn" id="btn-how">How to play</button>
+        <button class="mc-btn" id="btn-scores">High scores</button>
+        <button class="mc-btn" id="btn-mute-title">Sound: On</button>
+        <label class="mc-slider"><input type="range" id="sens-title" min="20" max="200" step="5"><span></span></label>
+      </div>
+      <div id="how" class="mc-panel hidden">
+        <h2>How to play</h2>
+        <p>You have <b>10 days</b> (about 15 minutes) to grow your <b>net worth</b>.</p>
+        <ul>
+          <li><b>Mine</b> coal, iron, gold and diamonds. Deeper ore is rarer and worth more.</li>
+          <li><b>Sell</b> ore to the Merchant at the Trading Post. Prices move every day, and dumping lots of ore pushes them down.</li>
+          <li><b>Invest</b> in village shares with each village's Banker. Shares pay dividends at dawn.</li>
+          <li><b>Deliver</b> ore to a village's Quartermaster to boost its health and share price.</li>
+          <li><b>Borrow</b> from the Trade Port bank to buy more, but interest is due every dawn.</li>
+          <li>Watch out for <b>Murkmoles</b> and flying <b>Skimmers</b>, which multiply as you get rich. Swords, armor and lanterns keep you safe. Let your swing recover between hits for full damage.</li>
+          <li>Your world <b>saves automatically</b> every 30 seconds and when you pause or quit, so pick it from the world list to carry on.</li>
+          <li>Buy the <b>Golden Parachute</b> wings from the Merchant, then press Space in mid-air to glide.</li>
+        </ul>
+        <table class="controls">
+          <tr><td>WASD</td><td>Move</td><td>Space</td><td>Jump / swim / glide</td></tr>
+          <tr><td>Mouse</td><td>Look</td><td>Ctrl</td><td>Sprint</td></tr>
+          <tr><td>Shift</td><td>Crouch (won't walk off edges)</td><td></td><td></td></tr>
+          <tr><td>Left click</td><td>Break / attack</td><td>Right click</td><td>Place / talk</td></tr>
+          <tr><td>1–9, wheel</td><td>Hotbar</td><td>E</td><td>Inventory &amp; crafting</td></tr>
+          <tr><td>L</td><td>Ledger</td><td>M</td><td>Mute</td></tr>
+          <tr><td>Q</td><td>Drop item (Ctrl+Q: stack)</td><td>F5</td><td>Change view</td></tr>
+          <tr><td>Esc</td><td>Pause</td><td></td><td></td></tr>
+        </table>
+        <button class="mc-btn small" id="btn-how-close">Back</button>
+      </div>
+      <div id="scores" class="mc-panel hidden">
+        <h2>High scores</h2>
+        <ol id="scores-list"></ol>
+        <button class="mc-btn small" id="btn-scores-close">Back</button>
+      </div>
+      <div class="foot">An original block-world economy game · all art &amp; sound generated in your browser</div>
+    </div>
+  </div>
+
+  <div id="screen-worlds" class="screen hidden">
+    <div class="title-bg"></div>
+    <div id="world-select" class="worlds-wrap mc-panel">
+      <h2>Select world</h2>
+      <div id="world-list"></div>
+      <div class="world-btns">
+        <button class="mc-btn small green" id="btn-world-play">Play selected world</button>
+        <button class="mc-btn small" id="btn-world-new">Create new world</button>
+        <button class="mc-btn small red" id="btn-world-del">Delete</button>
+        <button class="mc-btn small" id="btn-world-back">Back</button>
+      </div>
+    </div>
+    <div id="world-create" class="worlds-wrap mc-panel hidden">
+      <h2>Create new world</h2>
+      <label class="w-field">World name<input id="world-name" class="mc-input" maxlength="32" spellcheck="false"></label>
+      <label class="w-field">Seed <span class="note">(leave blank for a random one)</span><input id="world-seed" class="mc-input" maxlength="32" spellcheck="false"></label>
+      <div class="world-btns">
+        <button class="mc-btn small green" id="btn-create">Create world</button>
+        <button class="mc-btn small" id="btn-create-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="screen-loading" class="screen hidden">
+    <div class="title-bg dirt"></div>
+    <div class="loading-wrap">
+      <div class="loading-text" id="loading-text">Generating world…</div>
+      <div class="progress"><div id="progress-fill"></div></div>
+    </div>
+  </div>
+
+  <div id="screen-pause" class="screen hidden">
+    <div class="dim"></div>
+    <div class="menu center">
+      <h2 class="screen-h">Game paused</h2>
+      <button class="mc-btn" id="btn-resume">Back to game</button>
+      <button class="mc-btn" id="btn-mute-pause">Sound: On</button>
+      <label class="mc-slider"><input type="range" id="sens-pause" min="20" max="200" step="5"><span></span></label>
+      <button class="mc-btn" id="btn-save">Save now</button>
+      <button class="mc-btn" id="btn-quit">Save and quit to title</button>
+      <div id="save-status"></div>
+    </div>
+  </div>
+
+  <div id="screen-end" class="screen hidden">
+    <div class="title-bg dirt"></div>
+    <div class="end-wrap mc-panel" id="end-content"></div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
